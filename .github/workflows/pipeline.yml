@@ -12,6 +12,8 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-18.04
     steps:
+        env: 
+          HEROKU_URL: "https://mega-pokedex.herokuapp.com/"
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
@@ -63,7 +65,6 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          HEROKU_URL: "https://mega-pokedex.herokuapp.com/"
         if: ${{ success() }}
       - name: slack failure notification
         uses: 8398a7/action-slack@v3
