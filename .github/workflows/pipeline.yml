@@ -12,8 +12,8 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-18.04
     steps:
-        env: 
-          HEROKU_URL: "https://mega-pokedex.herokuapp.com/"
+      env: 
+        HEROKU_URL: "https://mega-pokedex.herokuapp.com/"
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
