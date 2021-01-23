@@ -66,7 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           DEFAULT_BUMP: patch
       - name: slack failure notification
-      if: ${{ failure() }}
+        if: ${{ failure() }}
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
