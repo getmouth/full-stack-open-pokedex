@@ -47,3 +47,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           DEFAULT_BUMP: patch
+      - name: slack success notification
+        HEROKU_URL: "https://mega-pokedex.herokuapp.com/"
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: message,commit,author,eventName
+          custom_payload: |
+            {
+              username: 'github-action',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color:'good'
+                text: `a new version deployed to $HEROKU_URL (${process.env.AS_COMMIT}) by ${process.env.AS_AUTHOR} build took ${process.env.AS_TOOK}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ success() }}
+      - name: slack failure notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ failure() }}
