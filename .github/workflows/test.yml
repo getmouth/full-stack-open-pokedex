@@ -23,5 +23,5 @@ jobs:
         run: |
           echo "$COMMIT_MESSAGES"
           echo "$HAS_SKIP"
-          echo "$MESSAGES"
-          echo "$MESSAGE"
+          echo " messages: $MESSAGES \n"
+          echo " message: $MESSAGE"
