@@ -47,27 +47,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           DEFAULT_BUMP: patch
-      # - uses: 8398a7/action-slack@v3
-      #   with:
-      #     status: custom
-      #     fields: message,commit,ref
-      #     custom_payload: |
-      #       {
-      #         username: 'github-action',
-      #         icon_emoji: ':octocat:',
-      #         attachments: [{
-      #           color:'good'
-      #           text: `a new version deployed to ${{secrets.HEROKU_URL}} (${process.env.AS_COMMIT}) by ${process.env.AS_AUTHOR} build took ${process.env.AS_TOOK}`,
-      #         }]
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   if: ${{github.event_name == 'push' && success()}}
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              username: 'github-action',
+              icon_emoji: ':octocat:',
+              attachments: [{
+                color:'good'
+                text: `a new version deployed to ${{secrets.HEROKU_URL}} (${process.env.AS_COMMIT}) by ${process.env.AS_AUTHOR} build took ${process.env.AS_TOOK}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{github.event_name == 'push' && success()}}
       - uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,commit,message,took
+          mention: here
+          if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: success()
+        if: ${{ failure() }}
