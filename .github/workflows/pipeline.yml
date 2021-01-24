@@ -12,8 +12,8 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-18.04
     steps:
-      - env: 
-          HEROKU_URL: https://mega-pokedex.herokuapp.com/
+      - env:
+          HEROKU_URL: "https://mega-pokedex.herokuapp.com/"
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
@@ -42,8 +42,15 @@ jobs:
           healthcheck: "https://mega-pokedex.herokuapp.com/health"
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
-        if: ${{ success() }}
-      - uses: 8398a7/action-slack@v3
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        if: ${{github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip')}}
+        uses: anothrNick/github-tag-action@1.33.0
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          DEFAULT_BUMP: patch
+      - name: slack success notification
+        uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: message,commit,author,eventName
@@ -58,18 +65,12 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - uses: actions/checkout@v2
-      - name: Bump version and push tag
-        if: ${{github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip')}}
-        uses: anothrNick/github-tag-action@1.33.0
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          DEFAULT_BUMP: patch
-      - uses: 8398a7/action-slack@v3
+        if: ${{ github.event_name == 'push' && success() }}
+      - name: slack failure notification
+        uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,message,commit,author,action,eventName,job,took
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: ${{failure()}}
-        
+        if: ${{ failure() }}
